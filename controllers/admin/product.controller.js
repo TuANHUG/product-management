@@ -1,7 +1,8 @@
 const Product = require("../../models/product.model");
 const filterStatusHelper = require("../../helpers/filterStatus");
-// [GET] /admin/product
+const paginationHelper = require("../../helpers/pagination");
 
+// [GET] /admin/product
 module.exports.index = async (req, res) => {
   let find = {
     deleted: false,
@@ -10,7 +11,6 @@ module.exports.index = async (req, res) => {
   // filter status
   const filterStatus = filterStatusHelper(req.query);
 
-  
   if (req.query.status) {
     find.status = req.query.status;
   }
@@ -25,12 +25,55 @@ module.exports.index = async (req, res) => {
     find.title = regex;
   }
 
-  const products = await Product.find(find);
+  // pagination
+  let objPagination = {
+    currentPage: 1,
+    limit: 6,
+  };
+  const countProduct = await Product.countDocuments(find);
+  objPagination = paginationHelper(req.query, objPagination, countProduct);
+
+  const products = await Product.find(find)
+    .limit(objPagination.limit)
+    .skip(objPagination.skip);
 
   res.render("./admin/pages/products/index.pug", {
     pageTitle: "Products List",
     products: products,
     filterStatus: filterStatus,
     keyword: req.query.keyword || "",
+    pagination: objPagination,
   });
+};
+
+// [PATCH] /admin/product/change-status/:status/:id
+module.exports.changeStatus = async (req, res) => {
+  const { status, id } = req.params;
+  await Product.updateOne({ _id: id }, { status: status });
+
+  res.redirect(req.get("Referrer") || "/");
+};
+
+// [PATCH] /admin/product/change-multi
+module.exports.changeMultiStatus = async (req, res) => {
+  const type = req.body.type;
+  const ids = req.body.ids.split(", ");
+
+  switch (type) {
+    case "active":
+      await Product.updateMany(
+        { _id: { $in: ids } },
+        { status: "active" }
+      );
+      break;
+    case "inactive":
+      await Product.updateMany(
+        { _id: { $in: ids } },
+        { status: "inactive" }
+      );
+      break;
+    default:
+      break;
+  }
+  res.redirect(req.get("Referrer") || "/");
 };
