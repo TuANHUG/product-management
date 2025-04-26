@@ -90,14 +90,28 @@ if (formChangeMulti) {
     e.preventDefault();
 
     const checkboxMulti = document.querySelector("[checkbox-multi]");
-    const inputsChecked = document.querySelectorAll("input[name='id']:checked");
+    const inputsChecked = checkboxMulti.querySelectorAll("input[name='id']:checked");
+
+    const typeChange = e.target.elements.type.value;
+
+    if (typeChange === "delete-all") { 
+      const confirmDelete = confirm("Are you sure you want to delete all selected products?");
+      if (!confirmDelete) {
+        return;
+      }
+    }
 
     if (inputsChecked.length > 0) {
       let ids = [];
       const inputsId = formChangeMulti.querySelector("input[name='ids']");
 
       inputsChecked.forEach((input) => {
-        ids.push(input.value);
+        if (typeChange === "change-position") {
+          const position = input.closest("tr").querySelector("input[name='position']").value;
+          ids.push(`${input.value}-${position}`);
+        } else {
+          ids.push(input.value);
+        }
       });
       
       inputsId.value = ids.join(", ");
@@ -109,4 +123,24 @@ if (formChangeMulti) {
     }
   
   });
+}
+
+// alert flash message
+const flashMessage = document.querySelector("[show-alert]");
+if (flashMessage) {
+  const time = parseInt(flashMessage.getAttribute("data-time")) || 3000;
+
+  // Tự động ẩn sau vài giây
+  const timeout = setTimeout(() => {
+    flashMessage.classList.add("alert-hidden");
+  }, time);
+
+  // Nếu click vào nút đóng thì ẩn luôn
+  const closeButton = flashMessage.querySelector("[close-alert]");
+  if (closeButton) {
+    closeButton.addEventListener("click", () => {
+      clearTimeout(timeout); // Xóa timeout tự động
+      flashMessage.classList.add("alert-hidden");
+    });
+  }
 }

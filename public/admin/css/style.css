@@ -44,3 +44,52 @@
     border-bottom: 1px solid #515151;
 }
 /* End Sider */
+
+
+/* Show Alert */
+.alert-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1050;
+  max-width: 400px;
+  width: calc(100% - 40px); /* Giảm khi thu nhỏ màn hình */
+  transition: all 0.5s ease;
+}
+
+.alert-container.alert-hidden {
+  opacity: 0;
+  transform: translateX(120%);
+  pointer-events: none;
+}
+
+.alert {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  padding-right: 3rem; /* Để chừa chỗ cho nút X */
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 1rem;
+}
+
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.btn-close {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #155724;
+  padding: 0;
+  line-height: 1;
+}

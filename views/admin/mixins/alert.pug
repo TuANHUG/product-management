@@ -1,0 +1,15 @@
+mixin alert(time, messages)
+  - if (messages.success)
+    div(
+      class="alert-container"
+      show-alert 
+      data-time=time
+    )
+      .alert.alert-success(role="alert")
+        button(
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          close-alert
+        ) 
+        span #{messages.success}

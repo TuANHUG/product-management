@@ -3,9 +3,10 @@ include ../../mixins/filter-status.pug
 include ../../mixins/search.pug
 include ../../mixins/pagination.pug
 include ../../mixins/form-change-multi.pug
+include ../../mixins/alert.pug
 
 block main 
-
+  +alert(5000, messages)
   h1 Danh sách sản phẩm 
 
   .card.mb-3
@@ -34,6 +35,7 @@ block main
               th Hình ảnh
               th Tiêu đề
               th Giá
+              th Vị trí
               th Trạng thái
               th Hành động
           tbody
@@ -50,6 +52,14 @@ block main
                   img(src=item.thumbnail, alt=item.title, width="100px", height="auto") 
                 td #{item.title}
                 td #{item.price}$
+                td 
+                  input(
+                    type="number"
+                    value=item.position
+                    style="width: 60px;"
+                    min="1"
+                    name="position"
+                  )
                 td 
                   if item.status == "active"
                     a(
@@ -68,13 +78,19 @@ block main
                       class="badge bg-danger"
                     ) Ngừng hoạt động
                 td
-                  button(class="btn btn-warning btn-sm") Sửa
-                  button(class="btn btn-danger btn-sm ml-1") Xóa
+                  button(class="btn btn-warning btn-sm" ) Sửa
+                  button(class="btn btn-danger btn-sm ml-1" data-id=item._id button-delete) Xóa
   +pagination(pagination)
   form(
     action=""
     method="POST"
     id="form-change-status"
     data-path=prefixAdmin + "/product/change-status"
+    ) 
+  form(
+    action=""
+    method="POST"
+    id="form-delete-item"
+    data-path=prefixAdmin + "/product/delete"
     ) 
   script(src='/admin/js/product.js')

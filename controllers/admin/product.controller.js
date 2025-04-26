@@ -1,6 +1,7 @@
 const Product = require("../../models/product.model");
 const filterStatusHelper = require("../../helpers/filterStatus");
 const paginationHelper = require("../../helpers/pagination");
+const { parse } = require("dotenv");
 
 // [GET] /admin/product
 module.exports.index = async (req, res) => {
@@ -34,6 +35,7 @@ module.exports.index = async (req, res) => {
   objPagination = paginationHelper(req.query, objPagination, countProduct);
 
   const products = await Product.find(find)
+    .sort({position: "desc"})
     .limit(objPagination.limit)
     .skip(objPagination.skip);
 
@@ -51,6 +53,8 @@ module.exports.changeStatus = async (req, res) => {
   const { status, id } = req.params;
   await Product.updateOne({ _id: id }, { status: status });
 
+  req.flash("success", "Thay đổi trạng thái thành công!");
+
   res.redirect(req.get("Referrer") || "/");
 };
 
@@ -65,11 +69,36 @@ module.exports.changeMultiStatus = async (req, res) => {
         { _id: { $in: ids } },
         { status: "active" }
       );
+      req.flash("success", `Thay đổi trạng thái ${ids.length} sản phẩm thành công!`);
       break;
     case "inactive":
       await Product.updateMany(
         { _id: { $in: ids } },
         { status: "inactive" }
+      );
+      req.flash(
+        "success",
+        `Thay đổi trạng thái ${ids.length} sản phẩm thành công!`
+      );
+      break;
+    case "delete-all":
+      await Product.updateMany(
+        { _id: { $in: ids } },
+        { deleted: true, deletedAt: new Date() }
+      );
+      req.flash(
+        "success",
+        `Xóa ${ids.length} sản phẩm thành công!`
+      );
+      break
+    case "change-position":
+      for(const item of ids) {
+        const [id, position] = item.split("-");
+        await Product.updateOne({ _id: id }, { position: parseInt(position) });
+      }
+      req.flash(
+        "success",
+        `Thay đổi vị trí ${ids.length} sản phẩm thành công!`
       );
       break;
     default:
@@ -77,3 +106,11 @@ module.exports.changeMultiStatus = async (req, res) => {
   }
   res.redirect(req.get("Referrer") || "/");
 };
+
+// [DELETE] /admin/product/delete/:id
+module.exports.deleteItem = async (req, res) => {
+  const { id } = req.params;
+  await Product.updateOne({ _id: id }, { deleted: true, deletedAt: new Date() });
+  res.redirect(req.get("Referrer") || "/");
+
+}
