@@ -6,7 +6,8 @@ include ../../mixins/form-change-multi.pug
 include ../../mixins/alert.pug
 
 block main 
-  +alert(5000, messages)
+  +alert-success(5000, messages)
+  +alert-error(5000, messages)
   h1 Danh sách sản phẩm 
 
   .card.mb-3
@@ -21,8 +22,14 @@ block main
   .card.mb-3
     .card-header Danh sách
       .card-body 
-        +form-change-multi(`${prefixAdmin}/product/change-multi?_method=PATCH`)
-
+        .row 
+          .col-4
+            +form-change-multi(`${prefixAdmin}/product/change-multi?_method=PATCH`)
+          .col-8 
+            a(
+              href=`${prefixAdmin}/product/create` 
+              class="btn btn-online-success"
+            ) Thêm sản phẩm
         table(
           class = "table table-hover table-sm"
           checkbox-multi
@@ -78,7 +85,14 @@ block main
                       class="badge bg-danger"
                     ) Ngừng hoạt động
                 td
-                  button(class="btn btn-warning btn-sm" ) Sửa
+                  a(
+                    href=`${prefixAdmin}/product/detail/${item._id}`
+                    class="btn btn-secondary btn-sm" 
+                  ) Chi tiết
+                  a(
+                    href=`${prefixAdmin}/product/edit/${item._id}`
+                    class="btn btn-warning btn-sm" 
+                  ) Sửa
                   button(class="btn btn-danger btn-sm ml-1" data-id=item._id button-delete) Xóa
   +pagination(pagination)
   form(

@@ -93,3 +93,26 @@
   padding: 0;
   line-height: 1;
 }
+
+/* Image Preview */
+.image-preview {
+  width: 150px;
+  height: auto;
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.image-preview[src=""] {
+  display: none;
+}
+/* No underline a tag */
+a {
+  text-decoration: none;
+  color: #0d6efd; /* Bootstrap primary */
+}
+
+a:hover {
+  text-decoration: underline;
+}

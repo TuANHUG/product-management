@@ -96,4 +96,13 @@
 
 }
 
+a {
+  text-decoration: none;
+  color: #0d6efd; /* Bootstrap primary */
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 
