@@ -2,6 +2,7 @@ const Product = require("../../models/product.model");
 const systemConfig = require("../../config/system");
 const filterStatusHelper = require("../../helpers/filterStatus");
 const paginationHelper = require("../../helpers/pagination");
+const cloudUpload = require("../../helpers/cloudUpload");
 const { parse } = require("dotenv");
 
 // [GET] /admin/product
@@ -135,15 +136,20 @@ module.exports.createPost = async (req, res) => {
   }
 
   if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
+    try {
+      const result = await cloudUpload(req.file.buffer);
+      req.body.thumbnail = result.secure_url; // dùng URL từ Cloudinary
+    } catch (err) {
+      console.error("Cloudinary upload error:", err);
+      req.flash("error", "Upload ảnh thất bại");
+      res.redirect(req.get("Referrer") || "/");
+    }
   }
 
   const product = new Product(req.body);
-
   await product.save();
 
   req.flash("success", "Thêm sản phẩm thành công!");
-
   res.redirect(`${systemConfig.prefixAdmin}/product`);
 };
 
@@ -175,9 +181,16 @@ module.exports.editPatch = async (req, res) => {
   req.body.position = parseInt(req.body.position);
 
   if (req.file) {
-    req.body.thumbnail = `/uploads/${req.file.filename}`;
+    try {
+      const result = await cloudUpload(req.file.buffer);
+      req.body.thumbnail = result.secure_url; // dùng URL từ Cloudinary
+    } catch (err) {
+      console.error("Cloudinary upload error:", err);
+      req.flash("error", "Upload ảnh thất bại");
+      res.redirect(req.get("Referrer") || "/");
+    }
   }
-
+  
   try {
     await Product.updateOne({ _id: req.params.id }, req.body);
     req.flash("success", "Cập nhật thành công!");

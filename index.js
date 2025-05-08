@@ -10,7 +10,6 @@ const systemConfig = require("./config/system");
 const route = require('./routes/client/index.route.js');
 const routeAdmin = require("./routes/admin/index.route.js");
 
-
 database.connect();
 
 // Initialize express app
