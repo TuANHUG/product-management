@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 require("dotenv").config();
 const methodOverride = require("method-override");
 const bodyParser = require("body-parser");
@@ -18,12 +19,16 @@ const port = process.env.PORT;
 
 app.use(methodOverride("_method"));
 
+// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // Flash
 app.use(cookieParser("estdrtfgjkjghfdfs"));
 app.use(session({ cookie: { maxAge: 60000 } }));
 app.use(flash());
+
+// TinyMCE
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
 //View engine
 app.set("views", `${__dirname}/views`);

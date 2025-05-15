@@ -1,4 +1,6 @@
 const Product = require("../../models/product.model");
+const ProductCategory = require("../../models/product-category.model");
+const createTreeHelper = require("../../helpers/createTree");
 const systemConfig = require("../../config/system");
 const filterStatusHelper = require("../../helpers/filterStatus");
 const paginationHelper = require("../../helpers/pagination");
@@ -28,6 +30,15 @@ module.exports.index = async (req, res) => {
     find.title = regex;
   }
 
+  // sort
+  let sort = {};
+
+  if (req.query.sortKey && req.query.sortValue) {
+    sort[req.query.sortKey] = req.query.sortValue;
+  } else {
+    sort.position = "desc";
+  }
+
   // pagination
   let objPagination = {
     currentPage: 1,
@@ -37,12 +48,12 @@ module.exports.index = async (req, res) => {
   objPagination = paginationHelper(req.query, objPagination, countProduct);
 
   const products = await Product.find(find)
-    .sort({ position: "desc" })
+    .sort(sort)
     .limit(objPagination.limit)
     .skip(objPagination.skip);
 
   res.render("./admin/pages/products/index.pug", {
-    pageTitle: "Products List",
+    pageTitle: "Danh sách sản phẩm",
     products: products,
     filterStatus: filterStatus,
     keyword: req.query.keyword || "",
@@ -117,8 +128,15 @@ module.exports.deleteItem = async (req, res) => {
 
 // [GET] /admin/product/create
 module.exports.create = async (req, res) => {
+  let find = {
+    deleted: false
+  };
+
+  const records = await ProductCategory.find(find).sort({ position: "desc" }).lean();
+  const tree = createTreeHelper(records);
   res.render("./admin/pages/products/create.pug", {
     pageTitle: "Create Product",
+    category: tree
   });
 };
 
@@ -162,11 +180,16 @@ module.exports.edit = async (req, res) => {
       deleted: false,
     };
 
+    const records = await ProductCategory.find({deleted: false})
+      .sort({ position: "desc" })
+      .lean();
+    const tree = createTreeHelper(records);
     const product = await Product.findOne(find);
 
     res.render("./admin/pages/products/edit.pug", {
       pageTitle: "Edit Product",
       product: product,
+      category: tree,
     });
   } catch (error) {
     res.redirect(req.get("Referrer") || `${systemConfig.prefixAdmin}/product`);
@@ -195,8 +218,7 @@ module.exports.editPatch = async (req, res) => {
     await Product.updateOne({ _id: req.params.id }, req.body);
     req.flash("success", "Cập nhật thành công!");
   } catch (error) {
-    console.log(error);
-    req.flash("error", "Có lỗi xảy ra, vui lòng thử lại!");
+      req.flash("error", "Có lỗi xảy ra, vui lòng thử lại!");
   }
 
   res.redirect(req.get("Referrer") || `${systemConfig.prefixAdmin}/product`);

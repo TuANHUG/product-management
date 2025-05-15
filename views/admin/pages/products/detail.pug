@@ -35,7 +35,7 @@ block main
 
 
   if (product.description)
-    div(class="mb-4") #{product.description}
+    div(class="mb-4") !{product.description}
 
   a(class ="btn btn-warning" href=`${prefixAdmin}/product/edit/${product._id}`) Chỉnh sửa 
   script(src="/admin/js/product.js")
