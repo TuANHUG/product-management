@@ -1,11 +1,13 @@
 extends ../../layouts/default.pug 
 block main 
-  h1(class="mb-4") Thêm mới quyền
+  if(role.permissions.includes("roles_edit"))
 
-  form(
-    action=`${prefixAdmin}/role/edit/${record._id}?_method=PATCH`
-    method="POST"
-  )
+    h1(class="mb-4") Thêm mới quyền
+
+    form(
+      action=`${prefixAdmin}/role/edit/${record._id}?_method=PATCH`
+      method="POST"
+    )
     div(class="form-group")
       label(for="title") Tiêu đề
       input(

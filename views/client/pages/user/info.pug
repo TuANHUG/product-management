@@ -1,0 +1,39 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-head.pug
+
+block main
+  .container.my-3
+    .row
+      .col-12
+        +box-head("Thông tin tài khoản")
+
+    if user
+      p Tên: #{user.fullName}
+      p Email: #{user.email}
+
+    if orders.length
+      h3.mt-4 Đơn hàng của bạn
+      each order in orders
+        .card.mb-3
+          .card-body
+            h5 Mã đơn hàng: #{order._id}
+            p Ngày đặt: #{order.createdAt.toLocaleString()}
+            ul
+              each item in order.products
+                li
+                  img(src=`${item.productInfo.thumbnail}` width="50")
+                  | #{item.productInfo.title} - SL: #{item.quantity} - Tổng: #{item.totalPrice.toLocaleString()}$
+            p.font-weight-bold Tổng đơn hàng: #{order.totalPrice.toLocaleString()}$
+            p Trạng thái:
+              if order.status == 'pending'
+                span.text-warning Đang chờ xử lý
+              else if order.status == 'processing'
+                span.text-info Đang gửi hàng
+              else if order.status == 'completed'
+                span.text-success Đã hoàn thành
+              else if order.status == 'cancelled'
+                span.text-danger Đã huỷ
+
+
+    else
+      p Bạn chưa có đơn hàng nào.

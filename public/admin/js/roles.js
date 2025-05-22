@@ -30,7 +30,6 @@ if (tablePermissions) {
         });
       }
     });
-    console.log(permissions);
 
     if (permissions.length > 0) {
       const formChangePermissions = document.querySelector(

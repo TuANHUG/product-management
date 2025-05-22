@@ -1,0 +1,35 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+
+block main
+  +alert-success(5000, messages)
+  h1(class="mb-4") Quản lý đơn hàng
+
+  table.table.table-bordered
+    thead
+      tr
+        th Mã đơn
+        th Khách hàng
+        th SĐT
+        th Địa chỉ
+        th Trạng thái
+        th Thao tác
+    tbody
+      each item in records
+        tr
+          td #{item._id}
+          td #{item.userInfo.fullName}
+          td #{item.userInfo.phone}
+          td #{item.userInfo.address}
+          td #{item.status}
+          td
+            form(
+              method="POST"
+              action=`${prefixAdmin}/order/update-status/${item._id}?_method=PATCH`
+            )
+              select(name="status", class="form-control form-control-sm")
+                option(value="pending", selected=item.status=='pending') Chờ xử lý
+                option(value="process", selected=item.status=='processing') Đang xử lý
+                option(value="completed", selected=item.status=='completed') Hoàn thành
+                option(value="cancelled", selected=item.status=='cancelled') Đã hủy
+              button.btn.btn-sm.btn-primary.mt-1(type="submit") Cập nhật

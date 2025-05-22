@@ -1,16 +1,19 @@
 extends ../../layouts/default.pug 
 include ../../mixins/table-tree.pug
 block main 
-  h1 Danh mục sản phẩm 
-  .card.mb-3
+  if(role.permissions.includes("products-category_view"))
+
+    h1 Danh mục sản phẩm 
+    .card.mb-3
     .card-header Danh sách
       .card-body  
         .row 
           .col-8 
           .col-4 
-            a(
-              href=`${prefixAdmin}/product-category/create`
-            ) Thêm danh mục
+            if(role.permissions.includes("products-category_create"))
+              a(
+                href=`${prefixAdmin}/product-category/create`
+              ) Thêm danh mục
         table(
           class = "table table-hover table-sm"
           checkbox-multi

@@ -44,38 +44,34 @@ module.exports.edit = async (req, res) => {
       pageTitle: "Chỉnh sửa nhóm quyền",
       record: record,
     });
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 };
 
 // [PATCH] /admin/role/edit/:id
 module.exports.editPost = async (req, res) => {
-  console.log(req.body);
   try {
     await Role.updateOne({ _id: req.params.id }, req.body);
-    req.flash("success", "Cập nhật thành công!");
+    req.flash("success", "Đitme mày");
   } catch (error) {
-    req.flash("error", "Có lỗi xảy ra, vui lòng thử lại!");
+    req.flash("error", "có cái lồn");
   }
 
-  res.redirect( `${systemConfig.prefixAdmin}/role`);
-}
+  res.redirect(`${systemConfig.prefixAdmin}/role`);
+};
 
 // [GET] /admin/roles/permissions
 module.exports.permissions = async (req, res) => {
   let find = {
-      deleted : false
-  }
+    deleted: false,
+  };
 
   const records = await Role.find(find);
 
   res.render("admin/pages/role/permissions", {
-      pageTitle: "Phân quyền",
-      records: records
+    pageTitle: "Phân quyền",
+    records: records,
   });
-  
-}
+};
 
 // [PATCH] /admin/roles/permissions
 module.exports.permissionsPatch = async (req, res) => {

@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const flash = require("express-flash");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const moment = require("moment");
 const database = require('./config/database.js');
 const systemConfig = require("./config/system");
 const route = require('./routes/client/index.route.js');
@@ -36,6 +37,7 @@ app.set("view engine", "pug");
 
 //local variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
+app.locals.moment = moment; // date time parser
 
 app.use(express.static(`${__dirname}/public`));
 
